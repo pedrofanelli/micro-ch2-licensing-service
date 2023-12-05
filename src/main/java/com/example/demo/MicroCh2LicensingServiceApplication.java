@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
  * 
+ * El esqueleto se arma en chapter 2, pero sigue en chapter 3
+ * 
  * Core initialization logic for the microservice should be placed in this class.
  * 
  * @author peter
