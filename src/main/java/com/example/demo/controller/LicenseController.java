@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +47,13 @@ public class LicenseController {
 			@RequestBody License request) {
 		
 		return ResponseEntity.ok(licenseService.createLicense(request, organizationId));
+	}
+	
+	@DeleteMapping(value="/{licenseId}")
+	public ResponseEntity<String> deleteLicense(
+			@PathVariable("organizationId") String organizationId, 
+			@PathVariable("licenseId") String licenseId) {
+		return ResponseEntity.ok(licenseService.deleteLicense(licenseId, organizationId));
 	}
 	
 }
