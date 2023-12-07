@@ -40,8 +40,8 @@ public class LicenseService {
 	public String updateLicense(License license, String organizationId){ 
 		String responseMessage = null;
 		if (license != null) {
-	         license.setOrganizationId(organizationId);
-	         responseMessage = String.format("This is the put and the object is: %s", license.toString());
+	         license.setOrganizationId(organizationId);                                      // usa el Locale default (EN)
+	         responseMessage = String.format(messages.getMessage("license.update.message", null, null), license.toString());
 		}
 	      return responseMessage;
     }
