@@ -16,6 +16,12 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
  * 
  * Core initialization logic for the microservice should be placed in this class.
  * 
+ * Los beans de mas abajo son para internacionalizacion, es decir, usar properties para cambiar texto devuelto en funcion de idioma
+ * 
+ * HATEOAS se usa para agregar links al objeto que se devuelve
+ * 
+ * Actuator se usa para obtener metricas y datos del estado del microservicio (data en application.properties)
+ * 
  * @author peter
  *
  */
