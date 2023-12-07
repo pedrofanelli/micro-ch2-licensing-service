@@ -37,6 +37,7 @@ public class LicenseController {
 		
 		// .add() is a method from the RepresentationModel added in the model License
 		// The linkTo method inspects the License controller class and obtains the root mapping, and the methodOn method obtains the method mapping by doing a dummy invocation of the target method.
+		// lo que hace es agregar los links a estos diferentes métodos para mostrar al cliente
 		license.add( 
 				linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId())).withSelfRel(),
 				linkTo(methodOn(LicenseController.class).createLicense(organizationId, license, null)).withRel("createLicense"),
