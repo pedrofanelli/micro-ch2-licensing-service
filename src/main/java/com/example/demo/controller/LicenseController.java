@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.model.License;
 import com.example.demo.service.LicenseService;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping(value="v1/organization/{organizationId}/license")
 public class LicenseController {
@@ -31,6 +34,15 @@ public class LicenseController {
 			@PathVariable("licenseId") String licenseId) {
 		
 		License license = licenseService.getLicense(licenseId, organizationId);
+		
+		// .add() is a method from the RepresentationModel added in the model License
+		// The linkTo method inspects the License controller class and obtains the root mapping, and the methodOn method obtains the method mapping by doing a dummy invocation of the target method.
+		license.add( 
+				linkTo(methodOn(LicenseController.class).getLicense(organizationId, license.getLicenseId())).withSelfRel(),
+				linkTo(methodOn(LicenseController.class).createLicense(organizationId, license, null)).withRel("createLicense"),
+				linkTo(methodOn(LicenseController.class).updateLicense(organizationId, license)).withRel("updateLicense"),
+				linkTo(methodOn(LicenseController.class).deleteLicense(organizationId, license.getLicenseId())).withRel("deleteLicense")
+		);
 		
 		return ResponseEntity.ok(license); // ResponseEntity represents the entire HTTP response
 		

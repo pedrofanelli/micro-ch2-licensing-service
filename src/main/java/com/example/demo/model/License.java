@@ -7,8 +7,8 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Getter @Setter @ToString
-public class License extends RepresentationModel<License> {
-
+public class License extends RepresentationModel<License> { //RepresentationModel<License> gives us the ability to 
+	                                                        //add links to the License model class. 
 	private int id;
 	private String licenseId;
 	private String description;
