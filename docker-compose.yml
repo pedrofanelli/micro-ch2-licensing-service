@@ -1,4 +1,5 @@
 #command: docker-compose up
+# para cerrar , hacerlo desde la app de Docker
 
 version: '3'
 

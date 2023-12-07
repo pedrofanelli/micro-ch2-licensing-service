@@ -17,3 +17,4 @@ EXPOSE 8080
 CMD ["java", "-jar", "micro-ch2-licensing-service-0.0.1-SNAPSHOT.jar"]
 
 # para usar docker compose, usamos: docker-compose up
+# primero necesitamos la imagen creada, y teniendola invocamos todas las que necesitamos
