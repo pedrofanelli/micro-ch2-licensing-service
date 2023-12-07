@@ -26,6 +26,12 @@ public class MicroCh2LicensingServiceApplication {
 		SpringApplication.run(MicroCh2LicensingServiceApplication.class, args);
 	}
 	
+	/**
+	 * LocalResolver y ResourceBundleMessageSource se usan para internacionalizacion, es decir,
+	 * para que se realice una respuesta segun el idioma que se manda en el RequestHeader
+	 * 
+	 * @return
+	 */
 	@Bean
 	public LocaleResolver localeResolver() {
 		SessionLocaleResolver localeResolver = new SessionLocaleResolver();
