@@ -1,37 +1,42 @@
 #command: docker-compose up
 # para cerrar , hacerlo desde la app de Docker
 
-version: '3'
-
-services:
-  licensingservice:
-    image: example/micro-ch2-licensing-service
-    ports:
-      - "8080:8080"
-    environment:
-       - "SPRING_PROFILES_ACTIVE=dev"
-       
-       
-# IMPLEMENTAR BASE DE DATOS, NO LO PROBE, LO DIO CHATGPT    
 #version: '3'
 
 #services:
-#  web:
-#    image: nginx:latest
-#    ports:
-#      - "80:80"
-
-#  backend:
-#    image: my-backend-image:latest
+#  licensingservice:
+#    image: example/micro-ch2-licensing-service
 #    ports:
 #      - "8080:8080"
-#    depends_on:
-#      - database
-
-#  database:
-#    image: postgres:latest
 #    environment:
-#      POSTGRES_DB: mydatabase
-#      POSTGRES_USER: myuser
-#      POSTGRES_PASSWORD: mypassword
+#       - "SPRING_PROFILES_ACTIVE=dev"
+       
+       
+# IMPLEMENTAR BASE DE DATOS, CREO QUE ANDA, LO DIO CHATGPT    
+#version: '3'
+
+services:
+  #web:
+    #image: nginx:latest
+    #ports:
+      #- "80:80"
+
+  backend:
+    image: example/micro-ch2-licensing-service:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - "SPRING_PROFILES_ACTIVE=dev"
+    depends_on:
+      - database
+
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: springpractice
+      POSTGRES_USER: peter
+      #POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: mypassword
 ###
+
+# estaria armando una nueva base, por lo que los datos los puedo inventar, pero luego en la api debo usarlos!
