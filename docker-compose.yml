@@ -1,0 +1,11 @@
+#command: docker-compose up
+
+version: '3'
+
+services:
+  licensingservice:
+    image: example/micro-ch2-licensing-service
+    ports:
+      - "8080:8080"
+    environment:
+       - "SPRING_PROFILES_ACTIVE=dev"

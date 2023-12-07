@@ -15,3 +15,5 @@ EXPOSE 8080
 
 # Specify the command to run on container startup
 CMD ["java", "-jar", "micro-ch2-licensing-service-0.0.1-SNAPSHOT.jar"]
+
+# para usar docker compose, usamos: docker-compose up
