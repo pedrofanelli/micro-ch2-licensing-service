@@ -8,12 +8,16 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.model.License;
+import com.example.demo.repository.LicenseRepository;
 
 @Service
 public class LicenseService {
 	
 	@Autowired
 	MessageSource messages;
+	
+	@Autowired
+	private LicenseRepository licenseRepository;
 
 	public License getLicense(String licenseId, String organizationId) { 
 		
