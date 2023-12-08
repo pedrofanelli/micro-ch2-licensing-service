@@ -13,7 +13,7 @@
        
        
 # IMPLEMENTAR BASE DE DATOS, CREO QUE ANDA, LO DIO CHATGPT    
-version: '2.1'
+version: '3'
 
 services:
   #web:
@@ -37,7 +37,7 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: "postgres"
+      POSTGRES_USER: "peter"
       #POSTGRES_HOST_AUTH_METHOD: trust
       POSTGRES_PASSWORD: "mypassword"
       POSTGRES_DB: "spring_practice"
@@ -46,10 +46,13 @@ services:
         aliases:
           - "database"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      #test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
+    volumes:
+      - database_data:/var/lib/postgresql/data
 
   
       
@@ -73,6 +76,8 @@ services:
 networks:
   backend:
     driver: bridge
+volumes:
+  database_data: 
 
 ###
 
