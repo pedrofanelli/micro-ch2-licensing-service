@@ -23,6 +23,10 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
  * 
  * Actuator se usa para obtener metricas y datos del estado del microservicio (data en application.properties)
  * 
+ * El @RefreshScope permite refrescar los archivos de configuracion, sin tener que redeployar el Config Server, entonces
+ * uno cambia el config, le pegamos con POST a localhost:8080/actuator/refresh, y eso refresca AMBOS! MAGIA!
+ * 
+ * 
  * @author peter
  *
  */
