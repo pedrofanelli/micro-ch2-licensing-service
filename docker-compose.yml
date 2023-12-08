@@ -13,7 +13,7 @@
        
        
 # IMPLEMENTAR BASE DE DATOS, CREO QUE ANDA, LO DIO CHATGPT    
-#version: '3'
+version: '2.1'
 
 services:
   #web:
@@ -21,22 +21,59 @@ services:
     #ports:
       #- "80:80"
 
-  backend:
+  configserver:
+    image: example/micro-configserver:latest
+    container_name: configuracion
+    ports:
+      - "8071:8071"
+    networks:
+      backend:
+        aliases:
+          - "configserver"
+
+  database:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: "postgres"
+      #POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_PASSWORD: "mypassword"
+      POSTGRES_DB: "spring_practice"
+    networks:
+      backend:
+        aliases:
+          - "database"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  
+      
+  licensingservice:
     image: example/micro-ch2-licensing-service:latest
     ports:
       - "8080:8080"
     environment:
-      - "SPRING_PROFILES_ACTIVE=dev"
+      PROFILE: "dev"
+      CONFIGSERVER_URI: "http://configserver:8071"
+      CONFIGSERVER_PORT: "8071"
+      DATABASESERVER_PORT: "5432"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    networks:
+      - backend
 
-  database:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: springpractice
-      POSTGRES_USER: peter
-      #POSTGRES_HOST_AUTH_METHOD: trust
-      POSTGRES_PASSWORD: mypassword
+networks:
+  backend:
+    driver: bridge
+
 ###
 
 # estaria armando una nueva base, por lo que los datos los puedo inventar, pero luego en la api debo usarlos!
