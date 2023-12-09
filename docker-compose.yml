@@ -21,15 +21,22 @@ services:
     #ports:
       #- "80:80"
 
+# ENCRYPT_KEY=fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo docker-compose up
+# otra forma es usando un .env file en el mismo lugar que docker-compose.yml
   configserver:
     image: example/micro-configserver:latest
     container_name: configuracion
     ports:
       - "8071:8071"
+    environment:
+      ENCRYPT_KEY: ${ENCRYPT_KEY}
     networks:
       backend:
         aliases:
           - "configserver"
+
+# docker exec -it 49a3a054fbe1 psql -U peter spring_practice
+# el codigo es el id del container con la base, luego el user y db
 
   database:
     image: postgres:latest
@@ -65,6 +72,7 @@ services:
       CONFIGSERVER_URI: "http://configserver:8071"
       CONFIGSERVER_PORT: "8071"
       DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "IMSYMMETRIC"
     depends_on:
       database:
         condition: service_healthy
