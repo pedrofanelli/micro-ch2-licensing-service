@@ -4,9 +4,12 @@ import java.util.Locale;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
@@ -30,7 +33,9 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
  * @author peter
  *
  */
+
 @SpringBootApplication
+@EnableDiscoveryClient
 @RefreshScope
 public class MicroCh2LicensingServiceApplication {
 
@@ -57,6 +62,12 @@ public class MicroCh2LicensingServiceApplication {
 		messageSource.setUseCodeAsDefaultMessage(true); // does not throw an error if a message is not found, instead it returns the message code
 		messageSource.setBasenames("messages"); // base name of the languages properties files
 		return messageSource;
+	}
+	
+	@LoadBalanced
+	@Bean
+	public RestTemplate getRestTemplate(){
+		return new RestTemplate();
 	}
 
 }
