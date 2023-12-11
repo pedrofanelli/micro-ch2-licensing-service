@@ -1,7 +1,0 @@
-#spring:
-    #application:
-     #name: licensing-service #debe ser EXACTAMENTE igual al nombre de los .properties en Config Server
-    #profiles:
-      #active: dev
-    #config:
-        #import: configserver:http://localhost:8071

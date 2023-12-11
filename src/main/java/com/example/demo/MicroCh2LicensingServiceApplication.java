@@ -35,8 +35,8 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
  */
 
 @SpringBootApplication
-@EnableDiscoveryClient
 @RefreshScope
+@EnableDiscoveryClient
 public class MicroCh2LicensingServiceApplication {
 
 	public static void main(String[] args) {
