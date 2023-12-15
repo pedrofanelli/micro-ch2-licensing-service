@@ -58,9 +58,8 @@ public class LicenseController {
 	
 	/**
 	 * Diferentes métodos para lograr la conexión entre este microservicio con organization-service
-	 * 
+	 * Los diferenciamos con clientType
 	 */
-	
 	@GetMapping(value="/{licenseId}/{clientType}")
 	public License getLicensesWithClient( @PathVariable("organizationId") String organizationId,
 			@PathVariable("licenseId") String licenseId,
