@@ -56,4 +56,17 @@ public class LicenseController {
 		return ResponseEntity.ok(licenseService.deleteLicense(licenseId));
 	}
 	
+	/**
+	 * Diferentes métodos para lograr la conexión entre este microservicio con organization-service
+	 * 
+	 */
+	
+	@GetMapping(value="/{licenseId}/{clientType}")
+	public License getLicensesWithClient( @PathVariable("organizationId") String organizationId,
+			@PathVariable("licenseId") String licenseId,
+			@PathVariable("clientType") String clientType) {
+
+		return licenseService.getLicense(licenseId, organizationId, clientType);
+	}
+	
 }
