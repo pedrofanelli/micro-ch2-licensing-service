@@ -2,10 +2,13 @@ package com.example.demo.model;
 
 import org.springframework.hateoas.RepresentationModel;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,6 +16,7 @@ import lombok.ToString;
 @Getter @Setter @ToString
 @Entity
 @Table(name="licenses")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class License extends RepresentationModel<License> { //RepresentationModel<License> gives us the ability to 
 	                                                        //add links to the License model class. 
 	@Id
@@ -32,6 +36,15 @@ public class License extends RepresentationModel<License> { //RepresentationMode
 	
 	@Column(name="comment")
 	private String comment;
+	
+	@Transient
+	private String organizationName;
+	@Transient
+	private String contactName;
+	@Transient
+	private String contactPhone;
+	@Transient
+	private String contactEmail;
 	
 	public License withComment(String comment){
 		this.setComment(comment);
