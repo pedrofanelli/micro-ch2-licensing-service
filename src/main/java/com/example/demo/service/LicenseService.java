@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.example.demo.config.ServiceConfig;
 import com.example.demo.model.License;
 import com.example.demo.repository.LicenseRepository;
+import com.example.demo.service.client.DiscoveryClientMode;
 
 @Service
 public class LicenseService {
@@ -22,12 +23,34 @@ public class LicenseService {
 	
 	@Autowired
 	ServiceConfig config;
+	
+	//CLIENTS
+	@Autowired
+	DiscoveryClientMode discoveryClient;
 
 	public License getLicense(String licenseId, String organizationId){
 		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
 		if (null == license) {
 			throw new IllegalArgumentException(String.format(messages.getMessage("license.search.error.message", null, null),licenseId, organizationId));	
 		}
+		return license.withComment(config.getProperty());
+	}
+	
+	//METODO PARA DIFERENTES CLIENTES!
+	public License getLicense(String licenseId, String organizationId, String clientType){
+		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
+		if (null == license) {
+			throw new IllegalArgumentException(String.format(messages.getMessage("license.search.error.message", null, null),licenseId, organizationId));	
+		}
+
+		Organization organization = retrieveOrganizationInfo(organizationId, clientType);
+		if (null != organization) {
+			license.setOrganizationName(organization.getName());
+			license.setContactName(organization.getContactName());
+			license.setContactEmail(organization.getContactEmail());
+			license.setContactPhone(organization.getContactPhone());
+		}
+
 		return license.withComment(config.getProperty());
 	}
 

@@ -41,6 +41,20 @@ public class LicenseController {
 		return ResponseEntity.ok(license);
 	}
 
+	/**
+	 * Diferentes métodos para lograr la conexión entre este microservicio con organization-service
+	 * Los diferenciamos con clientType
+	 * Son 3 métodos diferentes para obtener el endpoint SIN TENER EL DATO EXPLICITAMENTE!
+	 * Todo intermediado por Spring Cloud Load Balancer
+	 */
+	@GetMapping(value="/{licenseId}/{clientType}")
+	public License getLicensesWithClient( @PathVariable("organizationId") String organizationId,
+			@PathVariable("licenseId") String licenseId,
+			@PathVariable("clientType") String clientType) {
+
+		return licenseService.getLicense(licenseId, organizationId, clientType);
+	}
+	
 	@PutMapping
 	public ResponseEntity<License> updateLicense(@RequestBody License request) {
 		return ResponseEntity.ok(licenseService.updateLicense(request));
@@ -56,16 +70,6 @@ public class LicenseController {
 		return ResponseEntity.ok(licenseService.deleteLicense(licenseId));
 	}
 	
-	/**
-	 * Diferentes métodos para lograr la conexión entre este microservicio con organization-service
-	 * Los diferenciamos con clientType
-	 */
-	@GetMapping(value="/{licenseId}/{clientType}")
-	public License getLicensesWithClient( @PathVariable("organizationId") String organizationId,
-			@PathVariable("licenseId") String licenseId,
-			@PathVariable("clientType") String clientType) {
-
-		return licenseService.getLicense(licenseId, organizationId, clientType);
-	}
+	
 	
 }
