@@ -36,6 +36,12 @@ import java.util.List;
  * RestTemplate class in the code. This is antithetical to usual Spring REST invocations because 
  * you’ll usually have the Spring framework inject the RestTemplate class via the @Autowired annotation.
  * 
+ * Metodologia de uso:
+ * localhost:8081/v1/organization (POST) creando la organizacion
+ * localhost:8080/v1/organization/0337e939-821a-420c-88ea-a94ecdab1fca/license (POST) creando la licencia para la organizacion con el ID creado antes
+ * localhost:8080/v1/organization/0337e939-821a-420c-88ea-a94ecdab1fca/license/4d528bcc-1249-4c7c-9325-1e5f41a1a701/discovery (GET)
+ * Le pegamos a licensing-service con id de organizacion y licencia, le pega a microservicio en 8081 sin que sepamos la URL! 
+ * 
  */
 @Component
 public class DiscoveryClientMode {
