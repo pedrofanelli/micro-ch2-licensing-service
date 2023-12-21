@@ -64,6 +64,11 @@ public class MicroCh2LicensingServiceApplication {
 		return messageSource;
 	}
 	
+	/**
+	 * Get's a list of all the instances of the services
+	 * Then it's autowired by the client (RestTemplateClient.java)
+	 * @return
+	 */
 	@LoadBalanced
 	@Bean
 	public RestTemplate getRestTemplate(){
