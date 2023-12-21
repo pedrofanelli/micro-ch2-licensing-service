@@ -20,7 +20,7 @@ import com.example.demo.model.Organization;
 public interface FeignClientMode {
 
 	@GetMapping(
-            value="/v1/organization/{organizationId}",
+            value="/v1/organization/{organizationId}", // path to endpoint
             consumes="application/json")
-    Organization getOrganization(@PathVariable("organizationId") String organizationId);
+    Organization getOrganization(@PathVariable("organizationId") String organizationId); // parameters to endpoint
 }
