@@ -12,6 +12,7 @@ import com.example.demo.model.License;
 import com.example.demo.model.Organization;
 import com.example.demo.repository.LicenseRepository;
 import com.example.demo.service.client.DiscoveryClientMode;
+import com.example.demo.service.client.FeignClientMode;
 import com.example.demo.service.client.RestTemplateClient;
 
 @Service
@@ -32,6 +33,9 @@ public class LicenseService {
 	
 	@Autowired
 	RestTemplateClient restTemplateClient;
+	
+	@Autowired
+	FeignClientMode feignClient;
 
 	public License getLicense(String licenseId, String organizationId){
 		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -65,12 +69,11 @@ public class LicenseService {
 		
 		
 		switch (clientType) {
-		/*
+		
 		case "feign":
 			System.out.println("I am using the feign client");
-			organization = organizationFeignClient.getOrganization(organizationId);
+			organization = feignClient.getOrganization(organizationId);
 			break;
-		*/
 		case "rest":
 			System.out.println("I am using the rest client");
 			organization = restTemplateClient.getOrganization(organizationId);
