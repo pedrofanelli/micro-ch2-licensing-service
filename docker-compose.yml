@@ -61,7 +61,20 @@ services:
     volumes:
       - database_data:/var/lib/postgresql/data
 
-  
+  eurekaserver:
+    image: example/micro-eurekaserver:latest
+    container_name: eurekaserv
+    ports:
+     - "8761:8761" 
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "eurekaserver"
       
   licensingservice:
     image: example/micro-ch2-licensing-service:latest
@@ -80,10 +93,29 @@ services:
         condition: service_started
     networks:
       - backend
+      
+  organizationservice:
+    image: example/micro-organization-service:latest
+    ports:
+      - "8081:8081"
+    environment:
+      PROFILE: "dev"
+      CONFIGSERVER_URI: "http://configserver:8071"
+      CONFIGSERVER_PORT: "8071"
+      DATABASESERVER_PORT: "5432"
+      ENCRYPT_KEY: "IMSYMMETRIC"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+    networks:
+      - backend
 
 networks:
   backend:
     driver: bridge
+
 volumes:
   database_data: 
 
