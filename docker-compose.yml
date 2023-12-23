@@ -63,6 +63,7 @@ services:
 
   eurekaserver:
     image: example/micro-eurekaserver:latest
+    # le pongo aproposito otro nombre para distinguir mas cuando lo usamos en los url
     container_name: eurekaserv
     ports:
      - "8761:8761" 
