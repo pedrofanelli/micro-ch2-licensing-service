@@ -57,11 +57,8 @@ public class DiscoveryClientMode {
 	public Organization getOrganization(String organizationId) throws TimeoutException {
 		
 		// para probar el Circuit Breaker llamando a un microservicio
+		//throw new TimeoutException();
 		
-		throw new TimeoutException();
-		
-		
-		/*
         RestTemplate restTemplate = new RestTemplate();
         List<ServiceInstance> instances = discoveryClient.getInstances("organization-service");
 
@@ -77,6 +74,6 @@ public class DiscoveryClientMode {
                         null, Organization.class, organizationId);
 
         return restExchange.getBody();
-        */
+        
     }
 }
