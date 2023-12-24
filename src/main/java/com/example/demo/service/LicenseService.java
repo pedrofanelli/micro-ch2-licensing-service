@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -136,8 +137,13 @@ public class LicenseService {
 	 * getLicensesByOrganization() method running into a slow or timed out database query. 
 	 * 
 	 * Para ver ejemplo pegandole a un microservicio ver DiscoveryClientMode!
+	 * 
+	 * Part of the beauty of the circuit breaker pattern is that because a “middleman” 
+	 * is between the consumer of a remote resource and the resource itself, we have the 
+	 * opportunity to intercept a service failure and choose an alternative course of action to take.
+	 * In Resilience4j, this is known as a fallback strategy.
 	 */
-	@CircuitBreaker(name="licenseService")
+	@CircuitBreaker(name="licenseService",fallbackMethod="buildFallbackLicenseList")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
 		
 		//logger.debug("getLicensesByOrganization Correlation id: {}",
@@ -159,6 +165,16 @@ public class LicenseService {
 		} catch (InterruptedException e) {
 			logger.error(e.getMessage());
 		}
+	}
+	@SuppressWarnings("unused")
+	private List<License> buildFallbackLicenseList(String organizationId, Throwable t){
+		List<License> fallbackList = new ArrayList<>();
+		License license = new License();
+		license.setLicenseId("0000000-00-00000");
+		license.setOrganizationId(organizationId);
+		license.setProductName("Sorry no licensing information currently available");
+		fallbackList.add(license);
+		return fallbackList;
 	}
 	
 }
