@@ -132,6 +132,8 @@ public class LicenseService {
 	 * With the use of the @CircuitBreaker annotation, any time the getLicensesByOrganization() method 
 	 * is called, the call is wrapped with a Resilience4j circuit breaker. The circuit breaker interrupts 
 	 * any failed attempt to call the getLicensesByOrganization() method.
+	 * This code example would be boring if the database was working correctly. Let’s simulate the 
+	 * getLicensesByOrganization() method running into a slow or timed out database query. 
 	 */
 	@CircuitBreaker(name="licenseService")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {

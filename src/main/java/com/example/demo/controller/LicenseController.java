@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,12 +20,17 @@ import com.example.demo.service.LicenseService;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.List;
+import java.util.concurrent.TimeoutException;
+
 @RestController
 @RequestMapping(value="v1/organization/{organizationId}/license")
 public class LicenseController {
 
 	@Autowired
 	private LicenseService licenseService;
+	
+	private static final Logger logger = LoggerFactory.getLogger(LicenseController.class);
 	
 	// endpoint: v1/organization/{organizationId}/license/{licenseId}
 	@GetMapping("/{licenseId}")
@@ -70,6 +77,15 @@ public class LicenseController {
 		return ResponseEntity.ok(licenseService.deleteLicense(licenseId));
 	}
 	
+	/**
+	 * For Resilience4j
+	 */
+	@GetMapping("/")
+	public List<License> getLicenses( 
+			@PathVariable("organizationId") String organizationId) throws TimeoutException {
+		//logger.debug("LicenseServiceController Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
+		return licenseService.getLicensesByOrganization(organizationId);
+	}
 	
 	
 }
