@@ -1,8 +1,12 @@
 package com.example.demo.service;
 
 
+import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,8 @@ public class LicenseService {
 	
 	@Autowired
 	FeignClientMode feignClient;
+	
+	//private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
 	public License getLicense(String licenseId, String organizationId){
 		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -116,6 +122,16 @@ public class LicenseService {
 		return responseMessage;
 
 	}
-
+	
+	/**
+	 * Resilience4j implementation
+	 */
+	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
+		
+		//logger.debug("getLicensesByOrganization Correlation id: {}",
+				//UserContextHolder.getContext().getCorrelationId());
+		//randomlyRunLong();
+		return licenseRepository.findByOrganizationId(organizationId);
+	}
 	
 }
