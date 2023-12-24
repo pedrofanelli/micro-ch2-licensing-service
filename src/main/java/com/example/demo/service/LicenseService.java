@@ -2,11 +2,12 @@ package com.example.demo.service;
 
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
-//import org.slf4j.Logger;
-//import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,8 @@ import com.example.demo.repository.LicenseRepository;
 import com.example.demo.service.client.DiscoveryClientMode;
 import com.example.demo.service.client.FeignClientMode;
 import com.example.demo.service.client.RestTemplateClient;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @Service
 public class LicenseService {
@@ -41,7 +44,7 @@ public class LicenseService {
 	@Autowired
 	FeignClientMode feignClient;
 	
-	//private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
+	private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
 	public License getLicense(String licenseId, String organizationId){
 		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -125,13 +128,33 @@ public class LicenseService {
 	
 	/**
 	 * Resilience4j implementation
+	 * 
+	 * With the use of the @CircuitBreaker annotation, any time the getLicensesByOrganization() method 
+	 * is called, the call is wrapped with a Resilience4j circuit breaker. The circuit breaker interrupts 
+	 * any failed attempt to call the getLicensesByOrganization() method.
 	 */
+	@CircuitBreaker(name="licenseService")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
 		
 		//logger.debug("getLicensesByOrganization Correlation id: {}",
 				//UserContextHolder.getContext().getCorrelationId());
-		//randomlyRunLong();
+		randomlyRunLong();
 		return licenseRepository.findByOrganizationId(organizationId);
+	}
+	
+	private void randomlyRunLong() throws TimeoutException { 
+		Random rand = new Random();
+		int randomNum = rand.nextInt((3 - 1) + 1) + 1;
+		if (randomNum==3) sleep();
+	}
+	private void sleep() throws TimeoutException {
+		try {
+			System.out.println("Sleep");
+			Thread.sleep(5000);
+			throw new TimeoutException();
+		} catch (InterruptedException e) {
+			logger.error(e.getMessage());
+		}
 	}
 	
 }
