@@ -9,7 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.model.Organization;
+
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * The Spring Discovery Client offers the lowest level of access to the Load Balancer and the 
@@ -49,7 +53,15 @@ public class DiscoveryClientMode {
 	@Autowired
     private DiscoveryClient discoveryClient;
 
-	public Organization getOrganization(String organizationId) {
+	@CircuitBreaker(name="organizationService")
+	public Organization getOrganization(String organizationId) throws TimeoutException {
+		
+		// para probar el Circuit Breaker llamando a un microservicio
+		
+		throw new TimeoutException();
+		
+		
+		/*
         RestTemplate restTemplate = new RestTemplate();
         List<ServiceInstance> instances = discoveryClient.getInstances("organization-service");
 
@@ -65,5 +77,6 @@ public class DiscoveryClientMode {
                         null, Organization.class, organizationId);
 
         return restExchange.getBody();
+        */
     }
 }

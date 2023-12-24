@@ -55,7 +55,7 @@ public class LicenseService {
 	}
 	
 	//METODO PARA DIFERENTES CLIENTES!
-	public License getLicense(String licenseId, String organizationId, String clientType){
+	public License getLicense(String licenseId, String organizationId, String clientType) throws TimeoutException{
 		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
 		if (null == license) {
 			throw new IllegalArgumentException(String.format(messages.getMessage("license.search.error.message", null, null),licenseId, organizationId));	
@@ -72,7 +72,7 @@ public class LicenseService {
 		return license.withComment(config.getProperty());
 	}
 	// método usado por el de arriba
-	private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
+	private Organization retrieveOrganizationInfo(String organizationId, String clientType) throws TimeoutException {
 		Organization organization = null;
 		
 		
@@ -134,6 +134,8 @@ public class LicenseService {
 	 * any failed attempt to call the getLicensesByOrganization() method.
 	 * This code example would be boring if the database was working correctly. Let’s simulate the 
 	 * getLicensesByOrganization() method running into a slow or timed out database query. 
+	 * 
+	 * Para ver ejemplo pegandole a un microservicio ver DiscoveryClientMode!
 	 */
 	@CircuitBreaker(name="licenseService")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
@@ -147,8 +149,7 @@ public class LicenseService {
 	private void randomlyRunLong() throws TimeoutException { 
 		Random rand = new Random();
 		int randomNum = rand.nextInt((3 - 1) + 1) + 1;
-		//if (randomNum==3) sleep();
-		sleep();
+		if (randomNum==3) sleep();
 	}
 	private void sleep() throws TimeoutException {
 		try {

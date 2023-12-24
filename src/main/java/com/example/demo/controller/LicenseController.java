@@ -53,11 +53,12 @@ public class LicenseController {
 	 * Los diferenciamos con clientType
 	 * Son 3 métodos diferentes para obtener el endpoint SIN TENER EL DATO EXPLICITAMENTE!
 	 * Todo intermediado por Spring Cloud Load Balancer
+	 * @throws TimeoutException 
 	 */
 	@GetMapping(value="/{licenseId}/{clientType}")
 	public License getLicensesWithClient( @PathVariable("organizationId") String organizationId,
 			@PathVariable("licenseId") String licenseId,
-			@PathVariable("clientType") String clientType) {
+			@PathVariable("clientType") String clientType) throws TimeoutException {
 
 		return licenseService.getLicense(licenseId, organizationId, clientType);
 	}
