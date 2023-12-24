@@ -142,6 +142,11 @@ public class LicenseService {
 	 * is between the consumer of a remote resource and the resource itself, we have the 
 	 * opportunity to intercept a service failure and choose an alternative course of action to take.
 	 * In Resilience4j, this is known as a fallback strategy.
+	 * The fallback method must reside in the same class as the original method that was 
+	 * protected by @CircuitBreaker.
+	 * 
+	 * Ahora, cuando exista un timeout error, en lugar de tirar excepción, nos devuelve nuestra
+	 * fallback. Incluso cuando esté cerrado!
 	 */
 	@CircuitBreaker(name="licenseService",fallbackMethod="buildFallbackLicenseList")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
@@ -166,6 +171,25 @@ public class LicenseService {
 			logger.error(e.getMessage());
 		}
 	}
+	/**
+	 * To create the fallback method in Resilience4j, we need to create a method that contains 
+	 * the same signature as the originating function plus one extra parameter, which is the 
+	 * target exception parameter. With the same signature, we can pass all the parameters from 
+	 * the original method to the fallback method.
+	 * 
+	 * We could have our fallback method read this data from an alternative data source, but 
+	 * for demonstration purposes, we’re going to construct a list that can be returned by our 
+	 * original function call.
+	 * 
+	 * Be aware of the actions you take with your fallback functions. If you call out to another 
+	 * distributed service in your fallback service, you may need to wrap the fallback with 
+	 * a @CircuitBreaker. Remember, the same failure that you’re experiencing with your primary 
+	 * course of action might also impact your secondary fallback option. Code defensively.
+	 * 
+	 * @param organizationId
+	 * @param t
+	 * @return
+	 */
 	@SuppressWarnings("unused")
 	private List<License> buildFallbackLicenseList(String organizationId, Throwable t){
 		List<License> fallbackList = new ArrayList<>();
