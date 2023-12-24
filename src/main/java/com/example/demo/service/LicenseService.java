@@ -147,12 +147,13 @@ public class LicenseService {
 	private void randomlyRunLong() throws TimeoutException { 
 		Random rand = new Random();
 		int randomNum = rand.nextInt((3 - 1) + 1) + 1;
-		if (randomNum==3) sleep();
+		//if (randomNum==3) sleep();
+		sleep();
 	}
 	private void sleep() throws TimeoutException {
 		try {
 			System.out.println("Sleep");
-			Thread.sleep(5000);
+			Thread.sleep(500);
 			throw new TimeoutException();
 		} catch (InterruptedException e) {
 			logger.error(e.getMessage());
