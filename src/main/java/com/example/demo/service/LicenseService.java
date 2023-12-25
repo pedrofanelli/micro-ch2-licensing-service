@@ -190,10 +190,11 @@ public class LicenseService {
 	 * TODOS generan un aspecto, un proxy, ante la excepción que fijemos, ojo con eso, ADEMÁS de la situación
 	 * particular que controlan. Generalmente es un TimeoutException.
 	 */
-	//@CircuitBreaker(name="licenseService",fallbackMethod="buildFallbackLicenseList")
+	//
 	//@RateLimiter(name="licenseService", fallbackMethod = "buildFallbackLicenseList")
 	//@Retry(name="retryLicenseService",fallbackMethod="fallbackRetry")
 	//@Bulkhead(name="bulkheadLicenseService",fallbackMethod="fallbackBulk")
+	@CircuitBreaker(name="licenseService",fallbackMethod="buildFallbackLicenseList")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
 		
 		//logger.debug("getLicensesByOrganization Correlation id: {}",
@@ -205,8 +206,7 @@ public class LicenseService {
 	private void randomlyRunLong() throws TimeoutException { 
 		Random rand = new Random();
 		int randomNum = rand.nextInt((3 - 1) + 1) + 1;
-		//if (randomNum==3) sleep();
-		sleep();
+		if (randomNum==3) sleep();
 	}
 	private void sleep() throws TimeoutException {
 		try {
