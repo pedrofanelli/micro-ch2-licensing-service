@@ -21,7 +21,10 @@ import com.example.demo.service.client.DiscoveryClientMode;
 import com.example.demo.service.client.FeignClientMode;
 import com.example.demo.service.client.RestTemplateClient;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead.Type;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 
 @Service
 public class LicenseService {
@@ -130,6 +133,10 @@ public class LicenseService {
 	/**
 	 * Resilience4j implementation
 	 * 
+	 * Orden de prioridad, si uso varios, y todos catchean cierta excepción, este es el orden.
+	 * 
+	 * Retry ( CircuitBreaker ( RateLimiter ( TimeLimiter ( Bulkhead ( Function ) ))))
+	 * 
 	 * With the use of the @CircuitBreaker annotation, any time the getLicensesByOrganization() method 
 	 * is called, the call is wrapped with a Resilience4j circuit breaker. The circuit breaker interrupts 
 	 * any failed attempt to call the getLicensesByOrganization() method.
@@ -146,9 +153,47 @@ public class LicenseService {
 	 * protected by @CircuitBreaker.
 	 * 
 	 * Ahora, cuando exista un timeout error, en lugar de tirar excepción, nos devuelve nuestra
-	 * fallback. Incluso cuando esté cerrado!
+	 * fallback. Incluso cuando esté cerrado (es decir, operativo normal)!
+	 * 
+	 * Veamos el BULKHEAD PATTERN
+	 * 
+	 * The bulkhead pattern segregates remote resource calls in their own thread pools so that 
+	 * a single misbehaving service can be contained and not crash the container.
+	 * Resilience4j provides two different implementations of the bulkhead pattern. You can use 
+	 * these implementations to limit the number of concurrent executions:
+	 * Semaphore bulkhead (default): Uses a semaphore isolation approach, limiting the number of 
+	 * concurrent requests to the service. Once the limit is reached, it starts rejecting requests.
+	 * Thread pool bulkhead: Uses a bounded queue and a fixed thread pool. This approach only 
+	 * rejects a request when the pool and the queue are full.
+	 * 
+	 * RETRY PATTERN
+	 * 
+	 * Funciona ejecutando retries cuando no puede conectar, intenta por ejemplo 5 veces con un cierto
+	 * tiempo entre cada una de ellas. Prueba, no conecta, intenta de nuevo, 5 veces, y luego envia fallback.
+	 * Podemos probarlo lanzando siempre excepción y usando SOLO este patrón. Esto por el orden de prioridad.
+	 * 
+	 * RATE LIMITER PATTERN
+	 * 
+	 * The main difference between the bulkhead and the rate limiter pattern is that the bulkhead pattern 
+	 * is in charge of limiting the number of concurrent calls (for example, it only allows X concurrent 
+	 * calls at a time). With the rate limiter, we can limit the number of total calls in a given timeframe 
+	 * (for example, allow X number of calls every Y seconds).
+	 * 
+	 * CONCLUSION:
+	 * 
+	 * Podemos usar varios al mismo tiempo. Bulkhead controla concurrencia, Rate Limiter controla concurrencia
+	 * dentro de una franja de tiempo específica, Circuit Breaker controla fallas en el servicio consecutivas
+	 * usando un grupo de intentos (12 por ejemplo) y segun la tasa que fijemos corta la conexión para evitar
+	 * el overhead; y finalmente Retry que permite volver a intentar x cantidad de veces cada tt tiempo cuando
+	 * fracasa una conexión. Son patrones que nos permiten controlar el funcionamiento de conexiones a db o 
+	 * microservicios en diferentes situaciones, pueden combinarse o no, segun la necesidad.
+	 * TODOS generan un aspecto, un proxy, ante la excepción que fijemos, ojo con eso, ADEMÁS de la situación
+	 * particular que controlan. Generalmente es un TimeoutException.
 	 */
-	@CircuitBreaker(name="licenseService",fallbackMethod="buildFallbackLicenseList")
+	//@CircuitBreaker(name="licenseService",fallbackMethod="buildFallbackLicenseList")
+	//@RateLimiter(name="licenseService", fallbackMethod = "buildFallbackLicenseList")
+	//@Retry(name="retryLicenseService",fallbackMethod="fallbackRetry")
+	//@Bulkhead(name="bulkheadLicenseService",fallbackMethod="fallbackBulk")
 	public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
 		
 		//logger.debug("getLicensesByOrganization Correlation id: {}",
@@ -160,7 +205,8 @@ public class LicenseService {
 	private void randomlyRunLong() throws TimeoutException { 
 		Random rand = new Random();
 		int randomNum = rand.nextInt((3 - 1) + 1) + 1;
-		if (randomNum==3) sleep();
+		//if (randomNum==3) sleep();
+		sleep();
 	}
 	private void sleep() throws TimeoutException {
 		try {
@@ -197,6 +243,26 @@ public class LicenseService {
 		license.setLicenseId("0000000-00-00000");
 		license.setOrganizationId(organizationId);
 		license.setProductName("Sorry no licensing information currently available");
+		fallbackList.add(license);
+		return fallbackList;
+	}
+	@SuppressWarnings("unused")
+	private List<License> fallbackBulk(String organizationId, Throwable t){
+		List<License> fallbackList = new ArrayList<>();
+		License license = new License();
+		license.setLicenseId("0000000-11-16168");
+		license.setOrganizationId(organizationId);
+		license.setProductName("Sorry Bulk pattern working...");
+		fallbackList.add(license);
+		return fallbackList;
+	}
+	@SuppressWarnings("unused")
+	private List<License> fallbackRetry(String organizationId, Throwable t){
+		List<License> fallbackList = new ArrayList<>();
+		License license = new License();
+		license.setLicenseId("0000000-22-88888");
+		license.setOrganizationId(organizationId);
+		license.setProductName("Sorry Retry pattern working...");
 		fallbackList.add(license);
 		return fallbackList;
 	}
