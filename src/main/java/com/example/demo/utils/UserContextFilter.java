@@ -16,6 +16,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * No es como el del gateway, este depende de jakarta.servlet
+ * 
+ * Filtro que se encarga de tomar los datos del header de la request y formar el objeto local, es
+ * decir, UserContext. Es un filtro PRE request, es decir, ANTES de que llegue al microservicio
  */
 @Component
 public class UserContextFilter implements Filter {
@@ -37,6 +40,8 @@ public class UserContextFilter implements Filter {
         logger.debug("UserContextFilter Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
 
         filterChain.doFilter(httpServletRequest, servletResponse);
+        
+        // si agregamos lógica acá abajo, se implementa en la response, es decir, en la salida del microservicio
     }
 
     @Override
