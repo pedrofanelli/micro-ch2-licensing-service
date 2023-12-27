@@ -1,5 +1,7 @@
 package com.example.demo;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 
 import org.springframework.boot.SpringApplication;
@@ -13,6 +15,8 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+
+import com.example.demo.utils.UserContextInterceptor;
 
 
 /**
@@ -70,11 +74,25 @@ public class MicroCh2LicensingServiceApplication {
 	 * Get's a list of all the instances of the services
 	 * Then it's autowired by the client (RestTemplateClient.java)
 	 * @return
+	 * 
+	 * Agregamos un Interceptor para toda llamada REST
+	 * 
 	 */
+	@SuppressWarnings("unchecked")
 	@LoadBalanced
 	@Bean
 	public RestTemplate getRestTemplate(){
-		return new RestTemplate();
+		RestTemplate template = new RestTemplate();
+        List interceptors = template.getInterceptors();
+        if (interceptors==null){
+            template.setInterceptors(Collections.singletonList(new UserContextInterceptor()));
+        }
+        else{
+            interceptors.add(new UserContextInterceptor());
+            template.setInterceptors(interceptors);
+        }
+
+        return template;
 	}
 
 }

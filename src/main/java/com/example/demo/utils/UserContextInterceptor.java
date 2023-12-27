@@ -13,6 +13,9 @@ import org.springframework.http.client.ClientHttpResponse;
 /**
  * Intercepta toda request http que se realice desde este microservicio, y le inyectamos los headers que necesitamos. En
  * nuestro ejemplo, el Correlation ID.
+ * 
+ * Tambien requiere que lo agreguemos en la configuración, donde creamos el Bean RestTemplate. En este proyecto
+ * está en la clase Main.
  */
 public class UserContextInterceptor implements ClientHttpRequestInterceptor {
 
