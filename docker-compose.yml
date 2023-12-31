@@ -77,8 +77,33 @@ services:
         aliases:
           - "eurekaserver"
       
+  gatewayserver:
+    image: example/micro-gatewayserver:latest
+    container_name: gateway
+    ports:
+     - "8072:8072"
+    environment:
+      PROFILE: "default"
+      SERVER_PORT: "8072"
+      CONFIGSERVER_URI: "http://configuracion:8071"
+      EUREKASERVER_URI: "http://eurekaserv:8761/eureka/"
+      EUREKASERVER_PORT: "8761"
+      CONFIGSERVER_PORT: "8071"
+    depends_on:
+      database:
+        condition: service_healthy
+      configserver:
+        condition: service_started
+      eurekaserver:
+        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "gateway"
+      
   licensingservice:
     image: example/micro-ch2-licensing-service:latest
+    container_name: licensing-service
     ports:
       - "8080:8080"
     environment:
@@ -97,6 +122,7 @@ services:
       
   organizationservice:
     image: example/micro-organization-service:latest
+    container_name: organization-service
     ports:
       - "8081:8081"
     environment:
