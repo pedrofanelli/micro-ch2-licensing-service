@@ -3,6 +3,7 @@ package com.example.demo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Consumer;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -93,6 +94,13 @@ public class MicroCh2LicensingServiceApplication {
         }
 
         return template;
+	}
+
+    @Bean
+    Consumer<String> hola() {
+		return (String oa) -> {
+			System.out.println(oa);
+		};
 	}
 
 }
