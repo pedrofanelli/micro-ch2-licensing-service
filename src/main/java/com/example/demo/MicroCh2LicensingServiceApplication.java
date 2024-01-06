@@ -96,11 +96,13 @@ public class MicroCh2LicensingServiceApplication {
         return template;
 	}
 
+	/*
     @Bean
     Consumer<String> hola() {
 		return (String oa) -> {
 			System.out.println(oa);
 		};
 	}
+	*/
 
 }
