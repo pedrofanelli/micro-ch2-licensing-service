@@ -104,5 +104,10 @@ public class MicroCh2LicensingServiceApplication {
 		};
 	}
 	*/
+	
+	@Bean
+	public Consumer<String> consumerLicense() {
+		return s -> System.out.println("Data Consumed en LICENSING SERVICE :: " + s.toUpperCase());
+	}
 
 }
