@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -17,6 +19,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
+import com.example.demo.events.model.OrganizationChangeModel;
 import com.example.demo.utils.UserContextInterceptor;
 
 
@@ -46,6 +49,8 @@ import com.example.demo.utils.UserContextInterceptor;
 @EnableFeignClients
 public class MicroCh2LicensingServiceApplication {
 
+	private static final Logger logger = LoggerFactory.getLogger(MicroCh2LicensingServiceApplication.class);
+	
 	public static void main(String[] args) {
 		SpringApplication.run(MicroCh2LicensingServiceApplication.class, args);
 	}
@@ -96,18 +101,17 @@ public class MicroCh2LicensingServiceApplication {
         return template;
 	}
 
+	
 	/*
-    @Bean
-    Consumer<String> hola() {
-		return (String oa) -> {
-			System.out.println(oa);
-		};
+	@Bean
+	public Consumer<String> consumerLicense() {
+		return s -> System.out.println("Data Consumed en LICENSING SERVICE :: " + s.toUpperCase());
 	}
 	*/
 	
 	@Bean
-	public Consumer<String> consumerLicense() {
-		return s -> System.out.println("Data Consumed en LICENSING SERVICE :: " + s.toUpperCase());
+	public Consumer<OrganizationChangeModel> loggerSink() {
+		return obj -> logger.debug("Received {} event for the organization id {}", obj.getAction(), obj.getOrganizationId());
 	}
 
 }
