@@ -35,7 +35,7 @@ public class OrganizationRestTemplateClient {
         
 		ResponseEntity<Organization> restExchange =
 				restTemplate.exchange(
-						"http://gateway:8072/organization/v1/organization/{organizationId}",
+						"http://localhost:8072/organization/v1/organization/{organizationId}",
 						HttpMethod.GET,
 						null, Organization.class, organizationId);
 		
@@ -47,4 +47,23 @@ public class OrganizationRestTemplateClient {
 
 		return restExchange.getBody();
 	}
+	
+	
+	private Organization checkRedisCache(String organizationId) {
+		try {
+			return redisRepository.findById(organizationId).orElse(null);
+		}catch (Exception ex){
+			logger.error("Error encountered while trying to retrieve organization {} check Redis Cache.  Exception {}", organizationId, ex);
+			return null;
+		}
+	}
+	
+	private void cacheOrganizationObject(Organization organization) {
+        try {
+        	redisRepository.save(organization);
+        }catch (Exception ex){
+            logger.error("Unable to cache organization {} in Redis. Exception {}", organization.getId(), ex);
+        }
+    }
+	
 }

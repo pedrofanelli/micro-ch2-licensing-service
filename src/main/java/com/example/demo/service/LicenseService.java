@@ -19,6 +19,7 @@ import com.example.demo.model.Organization;
 import com.example.demo.repository.LicenseRepository;
 import com.example.demo.service.client.DiscoveryClientMode;
 import com.example.demo.service.client.FeignClientMode;
+import com.example.demo.service.client.OrganizationRestTemplateClient;
 import com.example.demo.service.client.RestTemplateClient;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
@@ -47,6 +48,9 @@ public class LicenseService {
 	
 	@Autowired
 	FeignClientMode feignClient;
+	
+	@Autowired
+	OrganizationRestTemplateClient organizationRestClient; // usa REDIS!
 	
 	private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
@@ -96,7 +100,7 @@ public class LicenseService {
 			organization = discoveryClient.getOrganization(organizationId);
 			break;
 		default:
-			organization = restTemplateClient.getOrganization(organizationId);
+			organization = organizationRestClient.getOrganization(organizationId); // REDIS!!
 			break;
 		}
 		
