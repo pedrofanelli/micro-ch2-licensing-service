@@ -7,6 +7,7 @@ import java.util.function.Consumer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -15,6 +16,9 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
@@ -22,6 +26,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import com.example.demo.events.model.OrganizationChangeModel;
 import com.example.demo.utils.UserContextInterceptor;
 
+import com.example.demo.config.ServiceConfig;
 
 /**
  * 
@@ -50,6 +55,9 @@ import com.example.demo.utils.UserContextInterceptor;
 public class MicroCh2LicensingServiceApplication {
 
 	private static final Logger logger = LoggerFactory.getLogger(MicroCh2LicensingServiceApplication.class);
+	
+	@Autowired
+    private ServiceConfig serviceConfig;
 	
 	public static void main(String[] args) {
 		SpringApplication.run(MicroCh2LicensingServiceApplication.class, args);
@@ -112,6 +120,24 @@ public class MicroCh2LicensingServiceApplication {
 	@Bean
 	public Consumer<OrganizationChangeModel> loggerSink() {
 		return obj -> logger.debug("Received {} event for the organization id {}", obj.getAction(), obj.getOrganizationId());
+	}
+	
+	/* CONFIGURACION DE REDIS */
+	
+	@Bean
+	JedisConnectionFactory jedisConnectionFactory() {
+		String hostname = serviceConfig.getRedisServer();
+		int port = Integer.parseInt(serviceConfig.getRedisPort());
+	    RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(hostname, port);
+	    //redisStandaloneConfiguration.setPassword(RedisPassword.of("yourRedisPasswordIfAny"));
+	    return new JedisConnectionFactory(redisStandaloneConfiguration);
+	}
+
+	@Bean
+	public RedisTemplate<String, Object> redisTemplate() {
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
+		template.setConnectionFactory(jedisConnectionFactory());
+		return template;
 	}
 
 }
