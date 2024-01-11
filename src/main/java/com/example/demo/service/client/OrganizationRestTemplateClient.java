@@ -5,12 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.model.Organization;
 import com.example.demo.repository.OrganizationRedisRepository;
 import com.example.demo.utils.UserContext;
 
+/**
+ * 
+ * Cliente que utiliza Redis como Cache!
+ * 
+ */
+@Component
 public class OrganizationRestTemplateClient {
 	
 	@Autowired
@@ -33,11 +40,11 @@ public class OrganizationRestTemplateClient {
 
         logger.debug("Unable to locate organization from the redis cache: {}.", organizationId);
         
-		ResponseEntity<Organization> restExchange =
-				restTemplate.exchange(
-						"http://localhost:8072/organization/v1/organization/{organizationId}",
-						HttpMethod.GET,
-						null, Organization.class, organizationId);
+        ResponseEntity<Organization> restExchange =
+                restTemplate.exchange(
+                        "http://organization-service/v1/organization/{organizationId}",
+                        HttpMethod.GET,
+                        null, Organization.class, organizationId);
 		
 		/*Save the record from cache*/
         organization = restExchange.getBody();

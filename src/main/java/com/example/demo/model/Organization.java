@@ -10,7 +10,7 @@ import lombok.ToString;
 
 @Getter @Setter @ToString
 @RedisHash("organization")
-public class Organization extends RepresentationModel<Organization> {
+public class Organization {
 
 	@Id
 	String id;
