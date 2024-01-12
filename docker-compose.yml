@@ -100,12 +100,60 @@ services:
       backend:
         aliases:
           - "gateway"
+  
+  # hay un conflicto con los puertos de zookeeper/kafka, por eso acá les puse otros puertos, 2186 y 9096 respectivamente
+  # PERO al habilitarse en el container los activos son 2181 y 9092 respectivamente, medio confuso pero funciona
+  # Además le cambie el puerto 8080 de Licensing Service por 8086 porque el 8080 colisiona con el ServerAdmin de Zookeeper
+  # En el local lo cambiamos en la configuración, no hicimos lo mismo en Docker
+  
+  zookeeper:
+    image: zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2186
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2186:2186
+    networks:
+      backend:
+        aliases:
+          - "zookeeper"
+  
+  kafkaserver:
+    image: bitnami/kafka:latest
+    container_name: kafkaserver
+    ports:
+      - 9096:9096
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9096
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_CREATE_TOPICS: dresses:1:1,ratings:1:1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    depends_on:
+      zookeeper:
+        condition: service_started
+    networks:
+      backend:
+        aliases:
+          - "kafka"
+  
+  redisserver:
+    image: redis:alpine
+    container_name: redisserver
+    ports:
+      - 6379:6379
+    networks:
+      backend:
+        aliases:
+          - "redis"
       
   licensingservice:
     image: example/micro-ch2-licensing-service:latest
     container_name: licensing-service
     ports:
-      - "8080:8080"
+      - "8086:8086"
     environment:
       PROFILE: "dev"
       CONFIGSERVER_URI: "http://configserver:8071"
